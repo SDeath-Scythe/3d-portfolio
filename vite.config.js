@@ -6,6 +6,6 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   // GitHub Pages deployment configuration
-  base: '/3D-Portfolio/',
+  base: '/3d-portfolio/',
   assetsInclude: ['**/*.glb', '**/*.gltf'], // Include both .glb and .gltf as assets
 });
