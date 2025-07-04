@@ -1,0 +1,306 @@
+/* src/components/UI/Credits.css */
+
+.credits-toggle {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 20, 40, 0.9);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 50%;
+  color: #00ffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+  transition: all 0.3s ease;
+  z-index: 500;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.credits-toggle:hover {
+  background: rgba(0, 30, 60, 0.95);
+  border-color: #00ffff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.credits-toggle.active {
+  background: rgba(0, 255, 255, 0.2);
+  border-color: #00ffff;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+}
+
+.credits-icon {
+  line-height: 1;
+  font-weight: bold;
+}
+
+.credits-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1500;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.credits-panel {
+  width: 600px;
+  max-width: 90vw;
+  max-height: 80vh;
+  background: linear-gradient(135deg, 
+    rgba(0, 15, 30, 0.95) 0%, 
+    rgba(0, 25, 50, 0.95) 50%, 
+    rgba(0, 10, 25, 0.95) 100%
+  );
+  border: 2px solid #00ffff;
+  border-radius: 15px;
+  box-shadow: 
+    0 0 30px rgba(0, 255, 255, 0.3),
+    inset 0 0 20px rgba(0, 255, 255, 0.1);
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+  position: relative;
+  animation: slideInScale 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.credits-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 255, 255, 0.2), 
+    transparent
+  );
+  animation: creditsScan 3s ease-in-out infinite;
+}
+
+.credits-header {
+  padding: 20px 25px 15px 25px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.credits-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #00ffff;
+  margin: 0;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  letter-spacing: 2px;
+}
+
+.credits-close {
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid #ff0040;
+  border-radius: 50%;
+  color: #ff0040;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.credits-close:hover {
+  background: rgba(255, 0, 0, 0.4);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 0, 64, 0.5);
+}
+
+.credits-content {
+  padding: 20px 25px;
+  max-height: 400px;
+  overflow-y: auto;
+  position: relative;
+  z-index: 10;
+}
+
+.credits-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.credits-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.credits-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.credits-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.5);
+}
+
+.credits-section {
+  margin-bottom: 25px;
+}
+
+.credits-category {
+  font-size: 16px;
+  color: #00ffff;
+  margin-bottom: 15px;
+  border-left: 3px solid #00ffff;
+  padding-left: 10px;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+  letter-spacing: 1px;
+}
+
+.credits-item {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.credits-item:last-child {
+  border-bottom: none;
+}
+
+.credits-label {
+  color: #88ddff;
+  font-weight: bold;
+  min-width: 80px;
+}
+
+.credits-link {
+  color: #00ffff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.credits-link:hover {
+  color: #ffffff;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.8);
+}
+
+.credits-link::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #00ffff;
+  transition: width 0.3s ease;
+}
+
+.credits-link:hover::after {
+  width: 100%;
+}
+
+.credits-source,
+.credits-license {
+  color: #999999;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.credits-footer {
+  padding: 15px 25px;
+  border-top: 1px solid rgba(0, 255, 255, 0.3);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 10;
+}
+
+.credits-notice {
+  font-size: 12px;
+  color: #00ffff;
+  font-style: italic;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes creditsScan {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .credits-panel {
+    width: 95vw;
+    margin: 10px;
+  }
+  
+  .credits-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .credits-label {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .credits-toggle {
+    bottom: 15px;
+    left: 15px;
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+  
+  .credits-title {
+    font-size: 18px;
+  }
+  
+  .credits-category {
+    font-size: 14px;
+  }
+}

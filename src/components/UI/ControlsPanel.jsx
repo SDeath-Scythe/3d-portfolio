@@ -25,10 +25,16 @@ const ControlsPanel = () => {
       <div>🏃 WASD - Movement</div>
       <div>🎮 Mouse - Aim</div>
       <div>💥 Left Click - Fire</div>
-      <div>🚪 Right Click - Exit Mode</div>
+      <div>� Right Click - Revive Planet</div>
       <div>⚡ Shift - Run</div>
       <div>🚀 Space - Jump</div>
       <div>⬇️ C - Fly Down</div>
+      <div>🔄 R - Reset Camera</div>
+      <div style={{ marginTop: '8px', borderTop: '1px solid rgba(0, 212, 255, 0.3)', paddingTop: '8px' }}>
+        <div style={{ color: '#00ffff', fontWeight: 'bold', marginBottom: '4px' }}>🎵 AUDIO</div>
+        <div>🎶 M - Toggle Music</div>
+        <div>🔊 N - Toggle SFX</div>
+      </div>
     </div>
   );
 };

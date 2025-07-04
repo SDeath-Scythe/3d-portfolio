@@ -24,23 +24,29 @@ const FPSController = ({ onPointerLockChange }) => {
   const velocity = useRef(new THREE.Vector3());
   const direction = useRef(new THREE.Vector3());
   const moveSpeed = 8;
-  const sensitivity = 0.0015;
+  const sensitivity = 0.002; // Slightly increased for better responsiveness
   
   const [isPointerLocked, setIsPointerLocked] = useState(false);
+  
+  // Add smoothing for mouse movement
+  const smoothingFactor = 0.8;
 
-  // --- Camera Rotation Logic (Mouse Look) ---
+  // --- Camera Rotation Logic (Mouse Look) - Simple and reliable ---
   const handleMouseMove = useCallback((event) => {
     if (!isPointerLocked) return;
 
+    // Update rotation values
     yaw.current -= event.movementX * sensitivity;
     pitch.current -= event.movementY * sensitivity;
 
-    // Clamp vertical rotation to prevent flipping
-    pitch.current = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch.current));
+    // Clamp pitch to prevent over-rotation
+    pitch.current = Math.max(-Math.PI / 2.1, Math.min(Math.PI / 2.1, pitch.current));
 
-    // Apply rotations to camera
+    // Apply rotations using proper Euler order to prevent gimbal lock
+    camera.rotation.order = 'YXZ'; // This prevents gimbal lock
     camera.rotation.y = yaw.current;
     camera.rotation.x = pitch.current;
+    camera.rotation.z = 0; // Keep roll at zero
   }, [isPointerLocked, camera, sensitivity]);
 
   // --- WASD Movement Logic ---
@@ -53,8 +59,15 @@ const FPSController = ({ onPointerLockChange }) => {
       case 'ShiftLeft': keys.current.shift = true; break;
       case 'Space': keys.current.space = true; break;
       case 'KeyC': keys.current.c = true; break;
+      case 'KeyR': 
+        // Reset camera orientation
+        yaw.current = 0;
+        pitch.current = 0;
+        camera.rotation.set(0, 0, 0);
+        camera.rotation.order = 'YXZ';
+        break;
     }
-  }, []);
+  }, [camera]);
 
   const handleKeyUp = useCallback((event) => {
     switch (event.code) {
@@ -84,8 +97,9 @@ const FPSController = ({ onPointerLockChange }) => {
       direction.current.normalize();
     }
 
-    // Apply camera rotation to movement direction
-    direction.current.applyEuler(camera.rotation);
+    // Apply only yaw rotation to movement (ignore pitch for movement)
+    const yawEuler = new THREE.Euler(0, yaw.current, 0);
+    direction.current.applyEuler(yawEuler);
 
     // Calculate velocity with speed multiplier
     const speed = keys.current.shift ? moveSpeed * 2 : moveSpeed;

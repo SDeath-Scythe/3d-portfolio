@@ -1,55 +1,320 @@
 // src/components/Scene/PortfolioScene.jsx
-import React, { useState } from 'react';
+import React, { useState, Suspense, useRef, useEffect, useMemo } from 'react';
 import * as THREE from 'three';
+import { useGLTF } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import Gun from '../../models/Gun';
 import Planet from '../../models/Planet';
 
-const PortfolioScene = ({ hoveredObject }) => {
+// Separate components for GLB models to avoid hooks being called in render
+
+const PropShip = ({ position, rotation, scale, color = "#ffffff" }) => {
+  const { scene } = useGLTF('/assets/3d/prop-ship.glb');
+  const shipRef = useRef();
+  
+  useEffect(() => {
+    if (shipRef.current) {
+      // Apply color to all meshes in the ship
+      shipRef.current.traverse((child) => {
+        if (child.isMesh && child.material) {
+          if (child.material.clone) {
+            child.material = child.material.clone();
+            child.material.color.set(color);
+          }
+        }
+      });
+    }
+  }, [color]);
+  
+  return (
+    <group ref={shipRef} position={position} rotation={rotation} scale={scale}>
+      <primitive object={scene.clone()} />
+    </group>
+  );
+};
+
+// Custom space skybox for enhanced atmosphere
+const SpaceSkybox = () => {
+  return (
+    <mesh>
+      <sphereGeometry args={[500, 32, 32]} />
+      <meshBasicMaterial 
+        color="#001122" 
+        side={THREE.BackSide} 
+        transparent={true}
+        opacity={0.9}
+      />
+    </mesh>
+  );
+};
+
+// Particle stars for enhanced space atmosphere
+const SpaceStars = () => {
+  const starsRef = useRef();
+  const starCount = 1000;
+  
+  const starPositions = useMemo(() => {
+    const positions = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i++) {
+      const radius = 200 + Math.random() * 300;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.random() * Math.PI;
+      
+      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = radius * Math.cos(phi);
+      positions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+    }
+    return positions;
+  }, []);
+  
+  const starColors = useMemo(() => {
+    const colors = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i++) {
+      // Create varied star colors (white, blue, yellow, red)
+      const colorType = Math.random();
+      if (colorType < 0.6) {
+        // White stars (most common)
+        colors[i * 3] = 1;
+        colors[i * 3 + 1] = 1;
+        colors[i * 3 + 2] = 1;
+      } else if (colorType < 0.8) {
+        // Blue stars
+        colors[i * 3] = 0.7;
+        colors[i * 3 + 1] = 0.8;
+        colors[i * 3 + 2] = 1;
+      } else if (colorType < 0.95) {
+        // Yellow stars
+        colors[i * 3] = 1;
+        colors[i * 3 + 1] = 1;
+        colors[i * 3 + 2] = 0.7;
+      } else {
+        // Red stars
+        colors[i * 3] = 1;
+        colors[i * 3 + 1] = 0.7;
+        colors[i * 3 + 2] = 0.7;
+      }
+    }
+    return colors;
+  }, []);
+  
+  useFrame(({ clock }) => {
+    if (starsRef.current) {
+      starsRef.current.rotation.y = clock.getElapsedTime() * 0.0001;
+    }
+  });
+  
+  return (
+    <points ref={starsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          array={starPositions}
+          count={starCount}
+          itemSize={3}
+        />
+        <bufferAttribute
+          attach="attributes-color"
+          array={starColors}
+          count={starCount}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial 
+        size={2} 
+        vertexColors={true}
+        transparent={true}
+        opacity={0.9}
+        sizeAttenuation={true}
+      />
+    </points>
+  );
+};
+
+// Fallback component for loading errors or high-poly models
+const PlanetFallback = ({ position, scale, name, hoveredObject, isDestroyed }) => {
+  const meshRef = useRef();
+  
+  // Different colors for each planet
+  const getColorScheme = (planetName) => {
+    switch(planetName) {
+      case 'Planet_About':
+        return { 
+          normal: "#ff4444", 
+          destroyed: "#ff6622", // Brighter orange-red
+          emissive: isDestroyed ? "#aa2200" : "#440000" 
+        };
+      case 'Planet_Projects':
+        return { 
+          normal: "#4444ff", 
+          destroyed: "#6644ff", // Brighter purple-blue
+          emissive: isDestroyed ? "#2200aa" : "#000044" 
+        };
+      case 'Planet_Skills':
+        return { 
+          normal: "#44ff44", 
+          destroyed: "#66ff22", // Brighter lime-green
+          emissive: isDestroyed ? "#22aa00" : "#004400" 
+        };
+      default:
+        return { 
+          normal: "#ffffff", 
+          destroyed: "#aaaaaa", // Brighter gray
+          emissive: isDestroyed ? "#555555" : "#444444" 
+        };
+    }
+  };
+  
+  const colors = getColorScheme(name);
+  
+  useEffect(() => {
+    if (meshRef.current) {
+      // Set userData for raycasting compatibility
+      meshRef.current.userData.isTargetable = !isDestroyed;
+      meshRef.current.userData.name = name;
+      meshRef.current.userData.isDestroyed = isDestroyed;
+    }
+  }, [name, isDestroyed]);
+  
+  return (
+    <mesh 
+      ref={meshRef}
+      position={position} 
+      scale={scale}
+      userData={{ isTargetable: !isDestroyed, name, isDestroyed }}
+    >
+      <sphereGeometry args={[1, 16, 16]} />
+      <meshStandardMaterial 
+        color={isDestroyed ? colors.destroyed : colors.normal} 
+        emissive={colors.emissive}
+        roughness={isDestroyed ? 0.9 : 0.3}
+      />
+    </mesh>
+  );
+};
+
+const PortfolioScene = ({ hoveredObject, destroyedPlanets = [] }) => {
+  // Suppress non-critical GLTF extension warnings
+  useEffect(() => {
+    const originalWarn = console.warn;
+    const originalError = console.error;
+    
+    console.warn = (...args) => {
+      const message = args.join(' ').toString();
+      if (message.includes('KHR_materials_pbrSpecularGlossiness') ||
+          message.includes('GLTFLoader') ||
+          message.includes('Unknown extension') ||
+          message.includes('extension is not supported')) {
+        return; // Suppress these specific warnings
+      }
+      originalWarn.apply(console, args);
+    };
+    
+    console.error = (...args) => {
+      const message = args.join(' ').toString();
+      if (message.includes('KHR_materials_pbrSpecularGlossiness') ||
+          message.includes('GLTFLoader') ||
+          message.includes('Unknown extension') ||
+          message.includes('extension is not supported')) {
+        return; // Suppress these specific errors too
+      }
+      originalError.apply(console, args);
+    };
+    
+    return () => {
+      console.warn = originalWarn;
+      console.error = originalError;
+    };
+  }, []);
+
   return (
     <>
       {/* Gun viewmodel */}
       <Gun />
 
-      {/* Portfolio planets */}
+      {/* Three unique planet models - properly spaced and sized */}
+      
+      {/* Planet 1 - Front - Planet.glb */}
       <Planet
         planetScenePath="/assets/3d/Planet.glb"
-        position={[2, 0, -10]}
-        scale={[0.5, 0.5, 0.5]}
-        rotation={[0, Math.PI / 4, 0]}
+        position={[2, 5, -55]}
+        scale={[7.2, 7.2, 7.2]}
+        rotation={[0, 0, 0]}
         name="Planet_About"
         hoveredObject={hoveredObject}
+        isDestroyed={destroyedPlanets.includes('Planet_About')}
       />
       
+      {/* Planet 2 - Right - planet-2.glb */}
       <Planet
-        planetScenePath="/assets/3d/Planet.glb"
-        position={[-2, 1, -15]}
-        scale={[0.8, 0.8, 0.8]}
-        rotation={[0, -Math.PI / 6, 0]}
+        planetScenePath="/assets/3d/planet-2.glb"
+        position={[55, 6, 10]}
+        scale={[0.9, 0.9, 0.9]}
+        rotation={[0, -Math.PI / 3, 0]}
         name="Planet_Projects"
         hoveredObject={hoveredObject}
+        isDestroyed={destroyedPlanets.includes('Planet_Projects')}
       />
       
+      {/* Planet 3 - Left - planet-3.glb */}
       <Planet
-        planetScenePath="/assets/3d/Planet.glb"
-        position={[0, -2, -20]}
-        scale={[1.2, 1.2, 1.2]}
-        rotation={[Math.PI / 8, Math.PI / 2, 0]}
-        name="Planet_Contact"
+        planetScenePath="/assets/3d/planet-3.glb"
+        position={[-60, 8, 10]}
+        scale={[6.2, 6.2, 6.2]}
+        rotation={[0, Math.PI / 3, 0]}
+        name="Planet_Skills"
         hoveredObject={hoveredObject}
+        isDestroyed={destroyedPlanets.includes('Planet_Skills')}
       />
 
-      {/* Space background */}
-      <mesh position={[0, 0, 0]} scale={[200, 200, 200]}>
-        <sphereGeometry args={[1, 32, 32]} />
-        <meshBasicMaterial 
-          color="#0a0a0a" 
-          side={THREE.BackSide}
-          transparent={true}
-          opacity={0.8}
+      {/* Enhanced space atmosphere */}
+      
+      {/* Enhanced lighting for space environment */}
+      <ambientLight intensity={0.3} color="#4455ff" />
+      <directionalLight 
+        position={[50, 50, 50]} 
+        intensity={0.8} 
+        color="#ffffff"
+        castShadow
+      />
+      <pointLight 
+        position={[0, 0, 0]} 
+        intensity={1.2} 
+        color="#6677ff" 
+        distance={100}
+      />
+      
+      {/* Custom space skybox */}
+      <SpaceSkybox />
+      
+      {/* Particle stars */}
+      <SpaceStars />
+
+      {/* Prop ships scattered around - only two ships with different colors, far away */}
+      
+      {/* Ship 1 - Far right - Blue/Cyan */}
+      <Suspense fallback={null}>
+        <PropShip 
+          position={[200, 50, -120]} 
+          rotation={[0.1, Math.PI * 0.4, 0]} 
+          scale={[4, 4, 4]}
+          color="#00aaff"
         />
-      </mesh>
+      </Suspense>
+
+      {/* Ship 2 - Far left - Red/Orange */}
+      <Suspense fallback={null}>
+        <PropShip 
+          position={[-180, -30, 100]} 
+          rotation={[0, Math.PI * 0.9, 0.15]} 
+          scale={[3.5, 3.5, 3.5]}
+          color="#ff4400"
+        />
+      </Suspense>
     </>
   );
 };
+
+// Preload models for better performance
+useGLTF.preload('/assets/3d/prop-ship.glb');
 
 export default PortfolioScene;

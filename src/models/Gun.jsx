@@ -4,12 +4,9 @@ import { useGLTF } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three'; // Import THREE for Vector3
 
-// IMPORTANT: Update this path to match where you saved your gun model!
-import gunScene from '../../public/assets/3d/Gun.glb'; // Example path for a .glb file
-
 const Gun = () => {
   const gunRef = useRef();
-  const { scene } = useGLTF(gunScene);
+  const { scene } = useGLTF('/assets/3d/gun.glb'); // Use proper path
   const { camera } = useThree(); // Access the camera
 
   // Clone the scene to avoid conflicts
@@ -37,17 +34,19 @@ const Gun = () => {
       gunRef.current.rotation.y += Math.PI / 10;   // Angled toward center
       gunRef.current.rotation.z += Math.PI / 12;    // Slight roll
       
-      // Add subtle animation
+      // Add subtle animation (less frequent calculation)
       const time = clock.getElapsedTime();
-      gunRef.current.position.y += Math.sin(time * 1.5) * 0.003; // Subtle breathing
+      gunRef.current.position.y += Math.sin(time * 1.2) * 0.002; // Subtle breathing
       
-      // Mark gun and its children as non-targetable
-      gunRef.current.traverse((child) => {
-        if (child.isMesh) {
-          child.userData.isGun = true; // Mark as gun to exclude from raycasting
-          child.raycast = () => {}; // Completely disable raycasting for gun meshes
-        }
-      });
+      // Mark gun and its children as non-targetable (do this less frequently)
+      if (Math.floor(time * 2) % 2 === 0) { // Only every half second
+        gunRef.current.traverse((child) => {
+          if (child.isMesh) {
+            child.userData.isGun = true; // Mark as gun to exclude from raycasting
+            child.raycast = () => {}; // Completely disable raycasting for gun meshes
+          }
+        });
+      }
     }
   });
 
@@ -61,5 +60,8 @@ const Gun = () => {
     </mesh>
   );
 };
+
+// Preload gun model for better performance
+useGLTF.preload('/assets/3d/gun.glb');
 
 export default Gun;
