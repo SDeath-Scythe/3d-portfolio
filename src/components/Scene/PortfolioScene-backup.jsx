@@ -234,8 +234,6 @@ const PortfolioScene = ({ hoveredObject, destroyedPlanets = [] }) => {
 
       {/* Three unique planet models - properly spaced and sized */}
       
-      {/* Three unique planet models - properly spaced and sized */}
-      
       {/* Planet 1 - Front - Planet.glb */}
       <Planet
         planetScenePath={ASSET_PATHS.PLANET_1}

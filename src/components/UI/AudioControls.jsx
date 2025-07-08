@@ -6,74 +6,101 @@ const AudioControls = () => {
   const { 
     musicEnabled, 
     sfxEnabled, 
-    setMusicEnabled, 
-    setSfxEnabled,
-    startBackgroundMusic 
+    musicVolume, 
+    sfxVolume,
+    toggleMusic, 
+    toggleSFX, 
+    setMusicVolume, 
+    setSfxVolume 
   } = useAudio();
-
-  const handleMusicToggle = () => {
-    if (!musicEnabled) {
-      // If turning music on, start it
-      startBackgroundMusic();
-    }
-    setMusicEnabled(!musicEnabled);
-  };
-
-  const buttonStyle = (enabled) => ({
-    backgroundColor: enabled ? '#00ffff' : '#333',
-    color: enabled ? '#000' : '#00ffff',
-    border: '2px solid #00ffff',
-    padding: '8px 16px',
-    cursor: 'pointer',
-    fontFamily: 'inherit',
-    fontSize: '12px',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    transition: 'all 0.2s ease',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minWidth: '140px'
-  });
-
-  const keyStyle = {
-    backgroundColor: '#00ffff',
-    color: '#000',
-    padding: '2px 6px',
-    borderRadius: '3px',
-    fontSize: '10px',
-    fontWeight: 'bold',
-    marginLeft: '8px'
-  };
 
   return (
     <div style={{
-      position: 'fixed',
+      position: 'absolute',
       top: '20px',
-      right: '20px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '10px',
+      left: '20px',
+      background: 'rgba(0, 0, 0, 0.8)',
+      border: '1px solid #00ff88',
+      borderRadius: '8px',
+      padding: '15px',
+      color: '#00ff88',
+      fontFamily: 'monospace',
+      fontSize: '12px',
       zIndex: 1000,
-      fontFamily: '"Orbitron", monospace'
+      minWidth: '200px'
     }}>
-      <button
-        onClick={handleMusicToggle}
-        style={buttonStyle(musicEnabled)}
-        title="Press 'M' to toggle music"
-      >
-        <span>🎵 Music: {musicEnabled ? 'ON' : 'OFF'}</span>
-        <span style={keyStyle}>M</span>
-      </button>
+      <div style={{ marginBottom: '10px', fontWeight: 'bold', textAlign: 'center' }}>
+        🎵 AUDIO CONTROLS
+      </div>
       
-      <button
-        onClick={() => setSfxEnabled(!sfxEnabled)}
-        style={buttonStyle(sfxEnabled)}
-        title="Press 'N' to toggle sound effects"
-      >
-        <span>🔊 SFX: {sfxEnabled ? 'ON' : 'OFF'}</span>
-        <span style={keyStyle}>N</span>
-      </button>
+      <div style={{ marginBottom: '8px' }}>
+        <button
+          onClick={toggleMusic}
+          style={{
+            background: musicEnabled ? '#00ff88' : 'transparent',
+            color: musicEnabled ? '#000' : '#00ff88',
+            border: '1px solid #00ff88',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            marginRight: '8px',
+            borderRadius: '4px',
+            fontSize: '11px'
+          }}
+        >
+          🎵 {musicEnabled ? 'MUSIC ON' : 'MUSIC OFF'}
+        </button>
+        
+        <button
+          onClick={toggleSFX}
+          style={{
+            background: sfxEnabled ? '#00ff88' : 'transparent',
+            color: sfxEnabled ? '#000' : '#00ff88',
+            border: '1px solid #00ff88',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            borderRadius: '4px',
+            fontSize: '11px'
+          }}
+        >
+          🔊 {sfxEnabled ? 'SFX ON' : 'SFX OFF'}
+        </button>
+      </div>
+      
+      <div style={{ marginBottom: '6px' }}>
+        <label style={{ display: 'block', marginBottom: '2px' }}>
+          Music: {Math.round(musicVolume * 100)}%
+        </label>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+          value={musicVolume}
+          onChange={(e) => setMusicVolume(parseFloat(e.target.value))}
+          style={{
+            width: '100%',
+            accentColor: '#00ff88'
+          }}
+        />
+      </div>
+      
+      <div>
+        <label style={{ display: 'block', marginBottom: '2px' }}>
+          SFX: {Math.round(sfxVolume * 100)}%
+        </label>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+          value={sfxVolume}
+          onChange={(e) => setSfxVolume(parseFloat(e.target.value))}
+          style={{
+            width: '100%',
+            accentColor: '#00ff88'
+          }}
+        />
+      </div>
     </div>
   );
 };

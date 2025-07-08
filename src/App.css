@@ -7,19 +7,3 @@ html, body, #root {
   overflow: hidden; /* Crucial: Hides scrollbars to keep 3D view clean */
   background-color: black; /* Set a default background for the body */
 }
-
-/* Pulse animation for combat re-entry message */
-@keyframes pulse {
-  0% {
-    opacity: 0.6;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.05);
-  }
-  100% {
-    opacity: 0.6;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}

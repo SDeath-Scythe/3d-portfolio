@@ -1,21 +1,12 @@
 // src/components/LaserBeam.jsx
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const LaserBeam = ({ startPosition, endPosition, visible, onComplete }) => {
-  const meshRef = useRef();
+const LaserBeam = ({ startPosition, endPosition, visible, duration = 150, onComplete }) => {
+  const beamRef = useRef();
+  const materialRef = useRef();
   const timeRef = useRef(0);
-  const duration = 0.3;
-
-  // Create material once and reuse it
-  const material = useMemo(() => new THREE.MeshStandardMaterial({
-    color: "#00ffff",
-    transparent: true,
-    opacity: 1,
-    emissive: "#00ffff",
-    emissiveIntensity: 2.0
-  }), []);
 
   useEffect(() => {
     if (visible) {
@@ -24,50 +15,51 @@ const LaserBeam = ({ startPosition, endPosition, visible, onComplete }) => {
   }, [visible]);
 
   useFrame((state, delta) => {
-    if (!visible || !material) return;
-
-    timeRef.current += delta;
-
-    // Calculate opacity (fade out over time)
-    const opacity = Math.max(0, 1 - (timeRef.current / duration));
-    material.opacity = opacity;
-    material.needsUpdate = true;
-
-    // Complete the laser effect
-    if (timeRef.current >= duration) {
-      onComplete?.();
+    if (visible && beamRef.current && materialRef.current && startPosition && endPosition) {
+      timeRef.current += delta * 1000;
+      
+      // Fade out effect
+      const fadeProgress = Math.min(timeRef.current / duration, 1);
+      const opacity = 1 - fadeProgress;
+      
+      materialRef.current.opacity = Math.max(0, opacity);
+      
+      // Position and orient the beam
+      const start = new THREE.Vector3().copy(startPosition);
+      const end = new THREE.Vector3().copy(endPosition);
+      const direction = end.clone().sub(start);
+      const distance = direction.length();
+      
+      // Position beam at midpoint
+      const midpoint = start.clone().add(direction.clone().multiplyScalar(0.5));
+      beamRef.current.position.copy(midpoint);
+      
+      // Scale and orient beam
+      beamRef.current.scale.set(0.1, 0.1, distance);
+      beamRef.current.lookAt(end);
+      beamRef.current.rotateX(Math.PI / 2);
+      
+      // Complete the beam when duration is reached
+      if (timeRef.current >= duration) {
+        onComplete?.();
+      }
     }
   });
 
-  // Cleanup material when component unmounts
-  useEffect(() => {
-    return () => {
-      material.dispose();
-    };
-  }, [material]);
-
-  if (!visible || !startPosition || !endPosition) return null;
-
-  // Calculate laser beam geometry
-  const start = new THREE.Vector3().copy(startPosition);
-  const end = new THREE.Vector3().copy(endPosition);
-  const direction = new THREE.Vector3().subVectors(end, start);
-  const distance = direction.length();
-  
-  // Calculate midpoint and rotation
-  const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-  const quaternion = new THREE.Quaternion();
-  quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+  if (!visible) return null;
 
   return (
-    <mesh 
-      ref={meshRef}
-      position={midpoint}
-      quaternion={quaternion}
-      material={material}
-    >
-      <cylinderGeometry args={[0.15, 0.15, distance, 8]} />
-    </mesh>
+    <group>
+      <mesh ref={beamRef}>
+        <cylinderGeometry args={[1, 1, 1, 8]} />
+        <meshBasicMaterial 
+          ref={materialRef}
+          color="#ff4444"
+          transparent={true}
+          opacity={1}
+        />
+      </mesh>
+    </group>
   );
 };
 

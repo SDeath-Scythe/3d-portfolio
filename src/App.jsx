@@ -4,11 +4,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home'; // We'll create this Home page component next
 
 const App = () => {
+  // Get the basename for GitHub Pages - only use it in production
+  const basename = import.meta.env.PROD ? '/3d-portfolio' : undefined;
+  
   return (
     // The main container for your entire application
     // Using inline styles here, but you can put these in a CSS file if preferred
     <main style={{ width: '100vw', height: '100vh', overflow: 'hidden', position: 'relative' }}>
-      <Router>
+      <Router basename={basename}>
         {/* Routes define which component to render based on the URL path */}
         <Routes>
           <Route path="/" element={<Home />} />

@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { ASSET_PATHS } from '../config/assetPaths';
 
 const Planet = ({ 
   planetScenePath, 
@@ -163,8 +164,8 @@ const Planet = ({
 };
 
 // Preload planet models for better performance
-useGLTF.preload('/assets/3d/Planet.glb');
-useGLTF.preload('/assets/3d/planet-2.glb');
-useGLTF.preload('/assets/3d/planet-3.glb');
+useGLTF.preload(ASSET_PATHS.PLANET_1);
+useGLTF.preload(ASSET_PATHS.PLANET_2);
+useGLTF.preload(ASSET_PATHS.PLANET_3);
 
 export default Planet;

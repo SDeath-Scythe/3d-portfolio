@@ -1,127 +1,102 @@
 // src/components/UI/InfoCard.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import './InfoCard.css';
 
-const InfoCard = ({ planetName, isVisible, onClose }) => {
-  const [isAnimating, setIsAnimating] = useState(false);
-
+const InfoCard = ({ visible, planetName, onClose }) => {
+  // Handle ESC key to close InfoCard
   useEffect(() => {
-    if (isVisible) {
-      setIsAnimating(true);
-    } else {
-      const timer = setTimeout(() => setIsAnimating(false), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [isVisible]);
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape' && visible) {
+        onClose();
+      }
+    };
 
-  const getCardContent = (planetName) => {
+    if (visible) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [visible, onClose]);
+
+  if (!visible) return null;
+
+  const getCardContent = () => {
     switch (planetName) {
       case 'Planet_About':
         return {
-          title: 'ABOUT SECTOR',
-          subtitle: 'Personal Profile',
+          title: '🌟 About Me',
           content: [
-            'Full-Stack Developer',
-            'React & Three.js Specialist',
-            'UI/UX Designer',
-            'Problem Solver'
-          ],
-          details: 'Passionate about creating immersive web experiences and interactive 3D applications.',
-          techStack: ['JavaScript', 'React', 'Three.js', 'Node.js']
+            '👋 Hi! I\'m a passionate developer with expertise in:',
+            '',
+            '🚀 Frontend: React, JavaScript, TypeScript',
+            '🎨 3D Graphics: Three.js, WebGL, R3F',
+            '⚡ Backend: Node.js, Python, APIs',
+            '🛠️ Tools: Git, Docker, VS Code',
+            '',
+            '💡 I love creating immersive web experiences that push the boundaries of what\'s possible in the browser!'
+          ]
         };
       case 'Planet_Projects':
         return {
-          title: 'PROJECTS SECTOR',
-          subtitle: 'Mission Portfolio',
+          title: '🛠️ My Projects',
           content: [
-            '3D Portfolio Site',
-            'E-commerce Platform',
-            'Real-time Chat App',
-            'Data Visualization'
-          ],
-          details: 'Innovative projects showcasing modern web technologies and creative solutions.',
-          techStack: ['React', 'Three.js', 'WebGL', 'MongoDB']
+            '🎮 3D FPS Portfolio - Interactive portfolio with Three.js',
+            '🌐 E-commerce Platform - Full-stack React application',
+            '📱 Mobile App - Cross-platform with React Native',
+            '🤖 AI Chatbot - Natural language processing integration',
+            '🎯 Game Engine - Custom WebGL renderer',
+            '📊 Data Visualization - Interactive charts and graphs',
+            '',
+            '🔗 Check out my GitHub for more projects!'
+          ]
         };
       case 'Planet_Skills':
         return {
-          title: 'SKILLS SECTOR',
-          subtitle: 'Technical Arsenal',
+          title: '⚡ Technical Skills',
           content: [
-            'Frontend Development',
-            '3D Graphics & WebGL',
-            'Backend Architecture',
-            'Database Design'
-          ],
-          details: 'Comprehensive skill set spanning the full development lifecycle.',
-          techStack: ['TypeScript', 'Python', 'Docker', 'AWS']
+            '🌐 Frontend Development:',
+            '  • React, Vue.js, Angular',
+            '  • HTML5, CSS3, SASS/SCSS',
+            '  • JavaScript (ES6+), TypeScript',
+            '',
+            '🔧 Backend Development:',
+            '  • Node.js, Express, FastAPI',
+            '  • Python, Java, C++',
+            '  • RESTful APIs, GraphQL',
+            '',
+            '🎨 3D & Graphics:',
+            '  • Three.js, WebGL, GLSL',
+            '  • Blender, Unity, Unreal Engine',
+            '',
+            '🗄️ Databases: MongoDB, PostgreSQL, Redis'
+          ]
         };
       default:
         return {
-          title: 'UNKNOWN SECTOR',
-          subtitle: 'Classified',
-          content: ['Access Denied'],
-          details: 'Sector information is classified.',
-          techStack: []
+          title: '🌌 Unknown Planet',
+          content: ['This planet holds mysteries yet to be discovered...']
         };
     }
   };
 
-  const cardData = getCardContent(planetName);
-
-  if (!isAnimating && !isVisible) return null;
+  const { title, content } = getCardContent();
 
   return (
-    <div className={`info-card-overlay ${isVisible ? 'visible' : ''}`}>
-      <div className={`info-card ${isVisible ? 'active' : ''}`}>
-        {/* Close button */}
-        <button className="info-card-close" onClick={onClose}>
-          <span className="close-icon">×</span>
-        </button>
-
-        {/* Header */}
+    <div className="info-card-overlay" onClick={onClose}>
+      <div className="info-card" onClick={(e) => e.stopPropagation()}>
         <div className="info-card-header">
-          <div className="info-card-title">{cardData.title}</div>
-          <div className="info-card-subtitle">{cardData.subtitle}</div>
-          <div className="info-card-line"></div>
+          <h2>{title}</h2>
+          <button className="close-button" onClick={onClose}>×</button>
         </div>
-
-        {/* Content */}
         <div className="info-card-content">
-          <div className="info-card-section">
-            <h3 className="section-title">OVERVIEW</h3>
-            <ul className="content-list">
-              {cardData.content.map((item, index) => (
-                <li key={index} className="content-item">
-                  <span className="bullet">▶</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="info-card-section">
-            <h3 className="section-title">DETAILS</h3>
-            <p className="details-text">{cardData.details}</p>
-          </div>
-
-          {cardData.techStack.length > 0 && (
-            <div className="info-card-section">
-              <h3 className="section-title">TECH STACK</h3>
-              <div className="tech-stack">
-                {cardData.techStack.map((tech, index) => (
-                  <span key={index} className="tech-badge">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
+          {content.map((line, index) => (
+            <p key={index} className={line === '' ? 'spacer' : ''}>{line}</p>
+          ))}
         </div>
-
-        {/* Footer */}
         <div className="info-card-footer">
-          <div className="footer-text">TARGET ACQUIRED - DATA RETRIEVED</div>
-          <div className="footer-line"></div>
+          <p>🎯 Right-click to revive destroyed planets | Press ESC to close</p>
         </div>
       </div>
     </div>

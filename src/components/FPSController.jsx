@@ -24,29 +24,39 @@ const FPSController = ({ onPointerLockChange }) => {
   const velocity = useRef(new THREE.Vector3());
   const direction = useRef(new THREE.Vector3());
   const moveSpeed = 8;
-  const sensitivity = 0.002; // Slightly increased for better responsiveness
+  const sensitivity = 0.0015;
   
   const [isPointerLocked, setIsPointerLocked] = useState(false);
-  
-  // Add smoothing for mouse movement
-  const smoothingFactor = 0.8;
 
-  // --- Camera Rotation Logic (Mouse Look) - Simple and reliable ---
+  // --- Camera Reset Function ---
+  const resetCamera = useCallback(() => {
+    // Reset camera rotation to prevent inversion issues
+    yaw.current = 0;
+    pitch.current = 0;
+    camera.rotation.set(0, 0, 0);
+    camera.rotation.order = 'YXZ';
+  }, [camera]);
+
+  // --- Camera Rotation Logic (Mouse Look) ---
   const handleMouseMove = useCallback((event) => {
     if (!isPointerLocked) return;
 
-    // Update rotation values
-    yaw.current -= event.movementX * sensitivity;
-    pitch.current -= event.movementY * sensitivity;
+    // More consistent mouse movement handling
+    const movementX = event.movementX || 0;
+    const movementY = event.movementY || 0;
 
-    // Clamp pitch to prevent over-rotation
-    pitch.current = Math.max(-Math.PI / 2.1, Math.min(Math.PI / 2.1, pitch.current));
+    // Apply mouse movement with proper sensitivity
+    yaw.current -= movementX * sensitivity;
+    pitch.current -= movementY * sensitivity;
 
-    // Apply rotations using proper Euler order to prevent gimbal lock
-    camera.rotation.order = 'YXZ'; // This prevents gimbal lock
+    // Clamp vertical rotation to prevent flipping
+    pitch.current = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch.current));
+
+    // Apply rotations to camera using Euler angles to prevent gimbal lock
+    camera.rotation.order = 'YXZ';
     camera.rotation.y = yaw.current;
     camera.rotation.x = pitch.current;
-    camera.rotation.z = 0; // Keep roll at zero
+    camera.rotation.z = 0; // Prevent roll
   }, [isPointerLocked, camera, sensitivity]);
 
   // --- WASD Movement Logic ---
@@ -60,14 +70,13 @@ const FPSController = ({ onPointerLockChange }) => {
       case 'Space': keys.current.space = true; break;
       case 'KeyC': keys.current.c = true; break;
       case 'KeyR': 
-        // Reset camera orientation
-        yaw.current = 0;
-        pitch.current = 0;
-        camera.rotation.set(0, 0, 0);
-        camera.rotation.order = 'YXZ';
+        // Reset camera rotation if it gets inverted
+        if (event.ctrlKey) {
+          resetCamera();
+        }
         break;
     }
-  }, [camera]);
+  }, [resetCamera]);
 
   const handleKeyUp = useCallback((event) => {
     switch (event.code) {
@@ -97,9 +106,8 @@ const FPSController = ({ onPointerLockChange }) => {
       direction.current.normalize();
     }
 
-    // Apply only yaw rotation to movement (ignore pitch for movement)
-    const yawEuler = new THREE.Euler(0, yaw.current, 0);
-    direction.current.applyEuler(yawEuler);
+    // Apply camera rotation to movement direction
+    direction.current.applyEuler(camera.rotation);
 
     // Calculate velocity with speed multiplier
     const speed = keys.current.shift ? moveSpeed * 2 : moveSpeed;
@@ -129,8 +137,17 @@ const FPSController = ({ onPointerLockChange }) => {
   const pointerLockChange = useCallback(() => {
     const locked = document.pointerLockElement === gl.domElement;
     setIsPointerLocked(locked);
+    
+    // Reset camera rotation when entering pointer lock to prevent inversion
+    if (locked) {
+      camera.rotation.order = 'YXZ';
+      // Initialize rotation values from current camera rotation
+      yaw.current = camera.rotation.y;
+      pitch.current = camera.rotation.x;
+    }
+    
     onPointerLockChange?.(locked);
-  }, [gl, onPointerLockChange]);
+  }, [gl, onPointerLockChange, camera]);
 
   const pointerLockError = useCallback(() => {
     console.error('Pointer lock error');
@@ -158,7 +175,8 @@ const FPSController = ({ onPointerLockChange }) => {
   return {
     isPointerLocked,
     requestPointerLock,
-    exitPointerLock
+    exitPointerLock,
+    resetCamera
   };
 };
 

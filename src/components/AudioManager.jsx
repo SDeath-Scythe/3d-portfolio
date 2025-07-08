@@ -1,5 +1,6 @@
 // src/components/AudioManager.jsx
 import React, { createContext, useContext, useRef, useEffect, useState } from 'react';
+import { ASSET_PATHS } from '../config/assetPaths';
 
 const AudioContext = createContext();
 
@@ -26,17 +27,17 @@ export const AudioProvider = ({ children }) => {
   // Initialize audio and keyboard listeners
   useEffect(() => {
     // Background music - using your space-music.mp3
-    backgroundMusicRef.current = new Audio('/assets/audio/space-music.mp3');
+    backgroundMusicRef.current = new Audio(ASSET_PATHS.SPACE_MUSIC);
     backgroundMusicRef.current.loop = true; // Enable looping
     backgroundMusicRef.current.volume = musicVolume;
     backgroundMusicRef.current.preload = 'auto'; // Preload the audio
 
     // Sound effects - using your actual file names
-    laserSoundRef.current = new Audio('/assets/audio/laser.mp3');
+    laserSoundRef.current = new Audio(ASSET_PATHS.LASER_SOUND);
     laserSoundRef.current.volume = sfxVolume;
     laserSoundRef.current.preload = 'auto';
 
-    hitSoundRef.current = new Audio('/assets/audio/destructuon.mp3');
+    hitSoundRef.current = new Audio(ASSET_PATHS.HIT_SOUND);
     hitSoundRef.current.volume = sfxVolume;
     hitSoundRef.current.preload = 'auto';
 
@@ -163,6 +164,15 @@ export const AudioProvider = ({ children }) => {
     }
   };
 
+  // Toggle functions for UI controls
+  const toggleMusic = () => {
+    setMusicEnabled(!musicEnabled);
+  };
+
+  const toggleSFX = () => {
+    setSfxEnabled(!sfxEnabled);
+  };
+
   const value = {
     musicEnabled,
     sfxEnabled,
@@ -172,6 +182,8 @@ export const AudioProvider = ({ children }) => {
     sfxVolume,
     setMusicVolume,
     setSfxVolume,
+    toggleMusic,
+    toggleSFX,
     startBackgroundMusic,
     playLaserSound,
     playHitSound

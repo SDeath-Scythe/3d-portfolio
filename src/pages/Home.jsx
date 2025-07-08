@@ -5,7 +5,7 @@ import { Canvas } from '@react-three/fiber';
 import Loader from '../components/Loader';
 import ErrorBoundary from '../components/ErrorBoundary';
 import GameManager from '../components/GameManager';
-import AudioProvider from '../components/AudioManager';
+import { AudioProvider } from '../components/AudioManager';
 import Crosshair from '../components/UI/Crosshair';
 import ControlsPanel from '../components/UI/ControlsPanel';
 import AudioControls from '../components/UI/AudioControls';
@@ -28,23 +28,15 @@ const Home = () => {
       visible: true,
       planetName: planetName
     });
-    setShowCombatMessage(false); // Hide combat message when card shows
+    setShowCombatMessage(true);
   }, []);
 
-  // Handle info card state change
-  const handleInfoCardStateChange = useCallback((isOpen) => {
-    // This can be used for additional logic if needed
-  }, []);
-
-  // Handle info card close
-  const handleInfoCardClose = useCallback(() => {
-    setInfoCard({ visible: false, planetName: null });
-    setShowCombatMessage(true); // Show combat re-entry message
-    
-    // Hide the message after 1 second (faster)
-    setTimeout(() => {
-      setShowCombatMessage(false);
-    }, 1000);
+  // Handle closing info card
+  const handleCloseInfoCard = useCallback(() => {
+    setInfoCard({
+      visible: false,
+      planetName: null
+    });
   }, []);
 
   return (
@@ -79,31 +71,27 @@ const Home = () => {
           {showCombatMessage && (
             <div style={{
               position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              color: '#00ffff',
-              fontFamily: 'Courier New, monospace',
-              fontSize: '18px',
-              textAlign: 'center',
-              textShadow: '0 0 10px rgba(0, 255, 255, 0.5)',
-              pointerEvents: 'none',
-              zIndex: 500,
-              animation: 'pulse 1.5s ease-in-out infinite',
+              top: '20px',
+              right: '20px',
               background: 'rgba(0, 0, 0, 0.8)',
-              padding: '15px 25px',
-              borderRadius: '10px',
-              border: '1px solid rgba(0, 255, 255, 0.3)'
+              color: '#00ff00',
+              padding: '10px 15px',
+              borderRadius: '5px',
+              border: '1px solid #00ff00',
+              fontFamily: 'monospace',
+              fontSize: '14px',
+              zIndex: 1000,
+              animation: 'fadeInOut 3s ease-in-out forwards'
             }}>
-              CLICK TO RE-ENTER COMBAT MODE
+              🎯 Combat Mode Active - Use Right Click to Revive
             </div>
           )}
           
-          {/* Info Card - rendered outside of Canvas */}
-          <InfoCard
+          {/* InfoCard */}
+          <InfoCard 
+            visible={infoCard.visible}
             planetName={infoCard.planetName}
-            isVisible={infoCard.visible}
-            onClose={handleInfoCardClose}
+            onClose={handleCloseInfoCard}
           />
         </section>
       </ErrorBoundary>

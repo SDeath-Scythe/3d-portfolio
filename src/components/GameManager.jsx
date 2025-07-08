@@ -17,6 +17,13 @@ const GameManager = ({ onPlanetHit }) => {
   const [shotObject, setShotObject] = useState(null);
   const [isPointerLocked, setIsPointerLocked] = useState(false);
   
+  // Debug logging
+  useEffect(() => {
+    console.log('GameManager mounted');
+    console.log('Camera:', camera);
+    console.log('GL:', gl);
+  }, [camera, gl]);
+  
   // Destroyed planets state
   const [destroyedPlanets, setDestroyedPlanets] = useState([]);
   

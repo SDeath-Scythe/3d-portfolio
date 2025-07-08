@@ -11,111 +11,71 @@ const Credits = () => {
 
   return (
     <>
-      {/* Credits Toggle Button */}
-      <button 
-        className={`credits-toggle ${isOpen ? 'active' : ''}`}
+      {/* Credits toggle button */}
+      <button
+        className="credits-toggle"
         onClick={toggleCredits}
         title="View Credits"
       >
-        <span className="credits-icon">ⓘ</span>
+        ℹ️
       </button>
 
-      {/* Credits Panel */}
+      {/* Credits panel */}
       {isOpen && (
         <div className="credits-overlay" onClick={toggleCredits}>
           <div className="credits-panel" onClick={(e) => e.stopPropagation()}>
             <div className="credits-header">
-              <h3 className="credits-title">MISSION CREDITS</h3>
+              <h3>🎨 Credits & Attributions</h3>
               <button className="credits-close" onClick={toggleCredits}>×</button>
             </div>
             
             <div className="credits-content">
-              <div className="credits-section">
-                <h4 className="credits-category">AUDIO ASSETS</h4>
-                <div className="credits-item">
-                  <span className="credits-label">Music:</span>
-                  <a href="https://pixabay.com/users/universfield-28281460/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=342767" 
-                     target="_blank" rel="noopener noreferrer" className="credits-link">
-                    Universfield
-                  </a>
-                  <span className="credits-source">from Pixabay</span>
-                </div>
-                
-                <div className="credits-item">
-                  <span className="credits-label">Laser SFX:</span>
-                  <a href="https://pixabay.com/users/ribhavagrawal-39286533/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=230500" 
-                     target="_blank" rel="noopener noreferrer" className="credits-link">
-                    Ribhav Agrawal
-                  </a>
-                  <span className="credits-source">from Pixabay</span>
-                </div>
-                
-                <div className="credits-item">
-                  <span className="credits-label">Hit SFX:</span>
-                  <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=39409" 
-                     target="_blank" rel="noopener noreferrer" className="credits-link">
-                    freesound_community
-                  </a>
-                  <span className="credits-source">from Pixabay</span>
-                </div>
+              <div className="credit-section">
+                <h4>🎵 Audio Assets</h4>
+                <ul>
+                  <li><strong>space-music.mp3</strong> - Background ambient music</li>
+                  <li><strong>laser.mp3</strong> - Laser firing sound effect</li>
+                  <li><strong>destructuon.mp3</strong> - Impact/destruction sound</li>
+                </ul>
               </div>
 
-              <div className="credits-section">
-                <h4 className="credits-category">3D MODELS</h4>
-                <div className="credits-item">
-                  <span className="credits-label">Blaster:</span>
-                  <a href="https://skfb.ly/oxUYM" target="_blank" rel="noopener noreferrer" className="credits-link">
-                    Nodashii
-                  </a>
-                  <span className="credits-license">CC Attribution</span>
-                </div>
-                
-                <div className="credits-item">
-                  <span className="credits-label">Planet 1:</span>
-                  <a href="https://skfb.ly/oyDUw" target="_blank" rel="noopener noreferrer" className="credits-link">
-                    cmzw
-                  </a>
-                  <span className="credits-license">CC Attribution</span>
-                </div>
-                
-                <div className="credits-item">
-                  <span className="credits-label">Planet 2:</span>
-                  <a href="https://skfb.ly/6UErL" target="_blank" rel="noopener noreferrer" className="credits-link">
-                    Yo.Ri
-                  </a>
-                  <span className="credits-license">CC Attribution</span>
-                </div>
-                
-                <div className="credits-item">
-                  <span className="credits-label">Environment:</span>
-                  <a href="https://skfb.ly/JIPA" target="_blank" rel="noopener noreferrer" className="credits-link">
-                    Shapernode
-                  </a>
-                  <span className="credits-license">CC Attribution</span>
-                </div>
-                
-                <div className="credits-item">
-                  <span className="credits-label">Space Environment:</span>
-                  <a href="https://skfb.ly/6QV7A" target="_blank" rel="noopener noreferrer" className="credits-link">
-                    Loïc Norgeot
-                  </a>
-                  <span className="credits-license">CC Attribution</span>
-                </div>
-                
-                <div className="credits-item">
-                  <span className="credits-label">Spaceship:</span>
-                  <a href="https://skfb.ly/6BY9M" target="_blank" rel="noopener noreferrer" className="credits-link">
-                    EdwiixGG
-                  </a>
-                  <span className="credits-license">CC Attribution</span>
-                </div>
+              <div className="credit-section">
+                <h4>🌍 3D Models</h4>
+                <ul>
+                  <li><strong>gun.glb</strong> - FPS weapon viewmodel</li>
+                  <li><strong>Planet.glb</strong> - Main planet model</li>
+                  <li><strong>planet-2.glb</strong> - Secondary planet variant</li>
+                  <li><strong>planet-3.glb</strong> - Tertiary planet variant</li>
+                  <li><strong>prop-ship.glb</strong> - Space ship decoration</li>
+                  <li><strong>space-environment.glb</strong> - Environmental assets</li>
+                </ul>
+              </div>
+
+              <div className="credit-section">
+                <h4>🛠️ Technologies Used</h4>
+                <ul>
+                  <li><strong>React</strong> - UI framework</li>
+                  <li><strong>Three.js</strong> - 3D graphics library</li>
+                  <li><strong>@react-three/fiber</strong> - React renderer for Three.js</li>
+                  <li><strong>@react-three/drei</strong> - Useful helpers for R3F</li>
+                  <li><strong>Vite</strong> - Build tool and development server</li>
+                  <li><strong>GitHub Pages</strong> - Hosting platform</li>
+                </ul>
+              </div>
+
+              <div className="credit-section">
+                <h4>💡 Special Thanks</h4>
+                <ul>
+                  <li>Three.js community for excellent documentation</li>
+                  <li>React Three Fiber ecosystem contributors</li>
+                  <li>Open source 3D model and audio creators</li>
+                </ul>
               </div>
             </div>
-            
+
             <div className="credits-footer">
-              <div className="credits-notice">
-                All assets used under Creative Commons Attribution License
-              </div>
+              <p>Built with ❤️ using React, Three.js, and modern web technologies</p>
+              <p>© 2025 - Interactive 3D Portfolio</p>
             </div>
           </div>
         </div>
