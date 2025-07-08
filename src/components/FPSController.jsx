@@ -9,6 +9,7 @@ const FPSController = ({ onPointerLockChange }) => {
   // Refs for camera rotation (yaw for horizontal, pitch for vertical)
   const yaw = useRef(0);
   const pitch = useRef(0);
+  const isInitialized = useRef(false);
   
   // Movement state
   const keys = useRef({
@@ -20,13 +21,40 @@ const FPSController = ({ onPointerLockChange }) => {
     space: false,
     c: false
   });
-  
+
   const velocity = useRef(new THREE.Vector3());
   const direction = useRef(new THREE.Vector3());
   const moveSpeed = 8;
   const sensitivity = 0.0015;
   
   const [isPointerLocked, setIsPointerLocked] = useState(false);
+
+  // --- Initial Camera Setup to Aim at About Me Planet ---
+  useEffect(() => {
+    if (!isInitialized.current) {
+      // About Me planet position
+      const aboutMePosition = new THREE.Vector3(2, 5, -55);
+      const cameraPosition = camera.position;
+      
+      // Calculate direction to About Me planet
+      const direction = aboutMePosition.clone().sub(cameraPosition);
+      direction.normalize();
+      
+      // Calculate yaw (horizontal rotation)
+      yaw.current = Math.atan2(-direction.x, -direction.z);
+      
+      // Calculate pitch (vertical rotation)
+      pitch.current = Math.asin(direction.y);
+      
+      // Apply initial rotation to camera
+      camera.rotation.order = 'YXZ';
+      camera.rotation.y = yaw.current;
+      camera.rotation.x = pitch.current;
+      camera.rotation.z = 0;
+      
+      isInitialized.current = true;
+    }
+  }, [camera]);
 
   // --- Camera Reset Function ---
   const resetCamera = useCallback(() => {
