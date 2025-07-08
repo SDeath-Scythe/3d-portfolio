@@ -15,6 +15,7 @@ const Planet = ({
   isDestroyed = false 
 }) => {
   const planetRef = useRef();
+  const weakPointRef = useRef();
   const originalMaterialsRef = useRef(new Map()); // Store original materials
   
   // Load the planet model
@@ -151,15 +152,30 @@ const Planet = ({
   });
 
   return (
-    <mesh
-      ref={planetRef}
-      position={position}
-      scale={scale} // Initial scale
-      rotation={rotation}
-      visible={true} // Always visible - we modify materials instead of hiding
-    >
-      <primitive object={currentScene} />
-    </mesh>
+    <group>
+      <mesh
+        ref={planetRef}
+        position={position}
+        scale={scale} // Initial scale
+        rotation={rotation}
+        visible={true} // Always visible - we modify materials instead of hiding
+      >
+        <primitive object={currentScene} />
+      </mesh>
+      
+      {/* Subtle glow effect around planet - Only visible when not destroyed */}
+      {!isDestroyed && (
+        <mesh position={position}>
+          <sphereGeometry args={[scale[0] * 2.5, 16, 16]} />
+          <meshBasicMaterial 
+            color="#00ffff" 
+            transparent={true} 
+            opacity={0.08}
+            side={THREE.BackSide}
+          />
+        </mesh>
+      )}
+    </group>
   );
 };
 

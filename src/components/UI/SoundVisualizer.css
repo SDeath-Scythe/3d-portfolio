@@ -1,0 +1,77 @@
+/* src/components/UI/SoundVisualizer.css */
+
+.sound-visualizer {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  background: rgba(0, 20, 40, 0.95);
+  border: 1px solid rgba(0, 255, 136, 0.6);
+  border-radius: 8px;
+  padding: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+  pointer-events: none;
+  z-index: 60;
+}
+
+.visualizer-canvas {
+  display: block;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.visualizer-label {
+  margin-top: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  color: #00ffff;
+  text-align: center;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+  border-top: 1px solid rgba(0, 255, 136, 0.3);
+  padding-top: 5px;
+}
+
+/* Animated border glow */
+.sound-visualizer::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    transparent, 
+    rgba(0, 255, 136, 0.3), 
+    transparent, 
+    rgba(0, 255, 255, 0.3), 
+    transparent
+  );
+  border-radius: 10px;
+  z-index: -1;
+  animation: borderGlow 3s linear infinite;
+}
+
+@keyframes borderGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .sound-visualizer {
+    left: 10px;
+    bottom: 100px;
+    padding: 10px;
+  }
+  
+  .visualizer-canvas {
+    width: 150px;
+    height: 45px;
+  }
+  
+  .visualizer-label {
+    font-size: 9px;
+  }
+}

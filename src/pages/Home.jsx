@@ -11,6 +11,9 @@ import ControlsPanel from '../components/UI/ControlsPanel';
 import AudioControls from '../components/UI/AudioControls';
 import InfoCard from '../components/UI/InfoCard';
 import Credits from '../components/UI/Credits';
+import EnhancedHUD from '../components/UI/EnhancedHUD';
+import NotificationSystem from '../components/UI/NotificationSystem';
+import InstructionOverlay from '../components/UI/InstructionOverlay';
 
 const Home = () => {
   // InfoCard state
@@ -21,6 +24,38 @@ const Home = () => {
 
   // Track if we should show the re-enter combat message
   const [showCombatMessage, setShowCombatMessage] = useState(false);
+  
+  // Enhanced HUD state
+  const [hudState, setHudState] = useState({
+    health: 100,
+    energy: 100,
+    score: 0,
+    planetHits: 0,
+    isPointerLocked: false
+  });
+  
+  // Notification system state
+  const [notifications, setNotifications] = useState([]);
+
+  // Store reference to game manager functions
+  const [gameManagerRef, setGameManagerRef] = useState(null);
+
+  // Add notification helper
+  const addNotification = useCallback((type, title, message) => {
+    setNotifications(prev => [...prev, { type, title, message }]);
+  }, []);
+
+  // Handle combat mode request (for InfoCard close)
+  const handleRequestCombatMode = useCallback(() => {
+    if (gameManagerRef && gameManagerRef.requestPointerLock) {
+      gameManagerRef.requestPointerLock();
+      addNotification(
+        'success',
+        '🎯 COMBAT MODE ACTIVATED',
+        'Systems online! Target acquisition enabled. Weapons hot!'
+      );
+    }
+  }, [gameManagerRef, addNotification]);
 
   // Handle planet hit from GameManager
   const handlePlanetHit = useCallback((planetName) => {
@@ -29,6 +64,21 @@ const Home = () => {
       planetName: planetName
     });
     setShowCombatMessage(true);
+    
+    // Update HUD state
+    setHudState(prev => ({
+      ...prev,
+      planetHits: prev.planetHits + 1,
+      score: prev.score + 1000,
+      energy: Math.max(prev.energy - 10, 0)
+    }));
+    
+    // Add success notification
+    addNotification(
+      'success',
+      'TARGET ACQUIRED',
+      `Successfully engaged ${planetName.replace('Planet_', '')} target!`
+    );
   }, []);
 
   // Handle closing info card
@@ -58,6 +108,7 @@ const Home = () => {
             <Suspense fallback={<Loader />}>
               <GameManager 
                 onPlanetHit={handlePlanetHit}
+                onGameManagerReady={setGameManagerRef}
               />
             </Suspense>
           </Canvas>
@@ -65,7 +116,19 @@ const Home = () => {
           <Crosshair />
           <ControlsPanel />
           <AudioControls />
+          {/* Only show instruction overlay initially, hide after first interaction */}
+          <InstructionOverlay visible={!infoCard.visible && hudState.planetHits === 0} />
+          <EnhancedHUD 
+            health={hudState.health}
+            energy={hudState.energy}
+            score={hudState.score}
+            planetHits={hudState.planetHits}
+            isPointerLocked={hudState.isPointerLocked}
+          />
           <Credits />
+          
+          {/* Notification System */}
+          <NotificationSystem notifications={notifications} />
           
           {/* Combat mode re-entry message */}
           {showCombatMessage && (
@@ -92,6 +155,7 @@ const Home = () => {
             visible={infoCard.visible}
             planetName={infoCard.planetName}
             onClose={handleCloseInfoCard}
+            onRequestCombatMode={handleRequestCombatMode}
           />
         </section>
       </ErrorBoundary>

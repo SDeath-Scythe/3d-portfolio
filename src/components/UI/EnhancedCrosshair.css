@@ -1,0 +1,265 @@
+/* src/components/UI/EnhancedCrosshair.css */
+
+.crosshair-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 20;
+  transition: all 0.3s ease;
+}
+
+.crosshair-container.active {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.crosshair-container.locked {
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+/* Center dot */
+.crosshair-center {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, #00ffff, #00aaff);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 10px rgba(0, 255, 255, 0.8),
+    0 0 20px rgba(0, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.crosshair-center.pulse {
+  transform: scale(1.5);
+  opacity: 0.8;
+}
+
+/* Crosshair lines */
+.crosshair-line {
+  position: absolute;
+  background: linear-gradient(to right, transparent, #00ffff, transparent);
+  box-shadow: 0 0 5px rgba(0, 255, 255, 0.6);
+  transition: all 0.3s ease;
+}
+
+.crosshair-top {
+  top: -20px;
+  left: -1px;
+  width: 2px;
+  height: 15px;
+  background: linear-gradient(to bottom, transparent, #00ffff, transparent);
+}
+
+.crosshair-bottom {
+  bottom: -20px;
+  left: -1px;
+  width: 2px;
+  height: 15px;
+  background: linear-gradient(to top, transparent, #00ffff, transparent);
+}
+
+.crosshair-left {
+  top: -1px;
+  left: -20px;
+  width: 15px;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #00ffff, transparent);
+}
+
+.crosshair-right {
+  top: -1px;
+  right: -20px;
+  width: 15px;
+  height: 2px;
+  background: linear-gradient(to left, transparent, #00ffff, transparent);
+}
+
+/* Corner brackets */
+.crosshair-bracket {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #00ffff;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.crosshair-bracket-tl {
+  top: -25px;
+  left: -25px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.crosshair-bracket-tr {
+  top: -25px;
+  right: -25px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.crosshair-bracket-bl {
+  bottom: -25px;
+  left: -25px;
+  border-right: none;
+  border-top: none;
+}
+
+.crosshair-bracket-br {
+  bottom: -25px;
+  right: -25px;
+  border-left: none;
+  border-top: none;
+}
+
+.crosshair-container.active .crosshair-bracket {
+  opacity: 1;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+/* Scanning ring */
+.crosshair-scan-ring {
+  position: absolute;
+  top: -30px;
+  left: -30px;
+  width: 60px;
+  height: 60px;
+  border: 2px solid #ffff00;
+  border-radius: 50%;
+  animation: scanRing 1s ease-out forwards;
+}
+
+.scan-ring-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ffff00;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: scanRingInner 1s ease-out forwards;
+}
+
+/* Target lock indicator */
+.target-lock-indicator {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(255, 255, 0, 0.8);
+  animation: lockIndicator 0.5s ease-out forwards;
+}
+
+/* Energy rings */
+.crosshair-energy-rings {
+  position: absolute;
+  top: -40px;
+  left: -40px;
+  width: 80px;
+  height: 80px;
+}
+
+.energy-ring {
+  position: absolute;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 50%;
+  animation: energyRing 3s linear infinite;
+}
+
+.ring-1 {
+  top: 10px;
+  left: 10px;
+  width: 60px;
+  height: 60px;
+  animation-delay: 0s;
+}
+
+.ring-2 {
+  top: 5px;
+  left: 5px;
+  width: 70px;
+  height: 70px;
+  animation-delay: 1s;
+}
+
+.ring-3 {
+  top: 0px;
+  left: 0px;
+  width: 80px;
+  height: 80px;
+  animation-delay: 2s;
+}
+
+/* Animations */
+@keyframes scanRing {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes scanRingInner {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes lockIndicator {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes energyRing {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .crosshair-container {
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  
+  .crosshair-container.active {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  
+  .crosshair-container.locked {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

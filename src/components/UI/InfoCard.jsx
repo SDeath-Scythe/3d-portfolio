@@ -2,12 +2,12 @@
 import React, { useEffect } from 'react';
 import './InfoCard.css';
 
-const InfoCard = ({ visible, planetName, onClose }) => {
+const InfoCard = ({ visible, planetName, onClose, onRequestCombatMode }) => {
   // Handle ESC key to close InfoCard
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape' && visible) {
-        onClose();
+        handleClose();
       }
     };
 
@@ -19,6 +19,15 @@ const InfoCard = ({ visible, planetName, onClose }) => {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [visible, onClose]);
+
+  // Enhanced close handler that returns to combat mode
+  const handleClose = () => {
+    onClose();
+    // Small delay to ensure InfoCard is fully closed before entering combat mode
+    setTimeout(() => {
+      onRequestCombatMode?.();
+    }, 100);
+  };
 
   if (!visible) return null;
 
@@ -84,11 +93,11 @@ const InfoCard = ({ visible, planetName, onClose }) => {
   const { title, content } = getCardContent();
 
   return (
-    <div className="info-card-overlay" onClick={onClose}>
+    <div className="info-card-overlay" onClick={handleClose}>
       <div className="info-card" onClick={(e) => e.stopPropagation()}>
         <div className="info-card-header">
           <h2>{title}</h2>
-          <button className="close-button" onClick={onClose}>×</button>
+          <button className="close-button" onClick={handleClose}>×</button>
         </div>
         <div className="info-card-content">
           {content.map((line, index) => (
@@ -96,7 +105,7 @@ const InfoCard = ({ visible, planetName, onClose }) => {
           ))}
         </div>
         <div className="info-card-footer">
-          <p>🎯 Right-click to revive destroyed planets | Press ESC to close</p>
+          <p>🎯 Right-click to revive destroyed planets | Press ESC to close and return to combat</p>
         </div>
       </div>
     </div>

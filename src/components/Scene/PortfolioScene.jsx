@@ -6,6 +6,13 @@ import { useFrame } from '@react-three/fiber';
 import Gun from '../../models/Gun';
 import Planet from '../../models/Planet';
 import { ASSET_PATHS } from '../../config/assetPaths';
+import ParticleSystem from '../ParticleSystem';
+import ShieldEffect from '../ShieldEffect';
+import FloatingGeometry from '../FloatingGeometry';
+import EnergyTrail from '../EnergyTrail';
+import Starfield from '../Starfield';
+import HolographicText from '../HolographicText';
+import TargetingSystem from '../TargetingSystem';
 
 // Separate components for GLB models to avoid hooks being called in render
 
@@ -246,6 +253,13 @@ const PortfolioScene = ({ hoveredObject, destroyedPlanets = [] }) => {
         hoveredObject={hoveredObject}
         isDestroyed={destroyedPlanets.includes('Planet_About')}
       />
+      <TargetingSystem 
+        planetName="Planet_About"
+        position={[2, 5, -55]}
+        isDestroyed={destroyedPlanets.includes('Planet_About')}
+        visible={true}
+        hoveredObject={hoveredObject}
+      />
       
       {/* Planet 2 - Right - planet-2.glb */}
       <Planet
@@ -257,6 +271,13 @@ const PortfolioScene = ({ hoveredObject, destroyedPlanets = [] }) => {
         hoveredObject={hoveredObject}
         isDestroyed={destroyedPlanets.includes('Planet_Projects')}
       />
+      <TargetingSystem 
+        planetName="Planet_Projects"
+        position={[55, 6, 10]}
+        isDestroyed={destroyedPlanets.includes('Planet_Projects')}
+        visible={true}
+        hoveredObject={hoveredObject}
+      />
       
       {/* Planet 3 - Left - planet-3.glb */}
       <Planet
@@ -267,6 +288,13 @@ const PortfolioScene = ({ hoveredObject, destroyedPlanets = [] }) => {
         name="Planet_Skills"
         hoveredObject={hoveredObject}
         isDestroyed={destroyedPlanets.includes('Planet_Skills')}
+      />
+      <TargetingSystem 
+        planetName="Planet_Skills"
+        position={[-60, 8, 10]}
+        isDestroyed={destroyedPlanets.includes('Planet_Skills')}
+        visible={true}
+        hoveredObject={hoveredObject}
       />
 
       {/* Enhanced space atmosphere */}
@@ -291,6 +319,67 @@ const PortfolioScene = ({ hoveredObject, destroyedPlanets = [] }) => {
       
       {/* Particle stars */}
       <SpaceStars />
+      
+      {/* Floating geometric decorations */}
+      <FloatingGeometry count={30} spread={150} />
+      
+      {/* Particle systems around planets */}
+      <ParticleSystem 
+        position={[2, 5, -55]} 
+        particleCount={50}
+        color="#ff4444"
+        spread={10}
+        visible={!destroyedPlanets.includes('Planet_About')}
+      />
+      
+      <ParticleSystem 
+        position={[55, 6, 10]} 
+        particleCount={50}
+        color="#4444ff"
+        spread={8}
+        visible={!destroyedPlanets.includes('Planet_Projects')}
+      />
+      
+      <ParticleSystem 
+        position={[-60, 8, 10]} 
+        particleCount={50}
+        color="#44ff44"
+        spread={12}
+        visible={!destroyedPlanets.includes('Planet_Skills')}
+      />
+      
+      {/* Shield effects for non-destroyed planets */}
+      <ShieldEffect 
+        position={[2, 5, -55]} 
+        scale={[8, 8, 8]}
+        color="#ff4444"
+        visible={!destroyedPlanets.includes('Planet_About')}
+      />
+      
+      <ShieldEffect 
+        position={[55, 6, 10]} 
+        scale={[1.2, 1.2, 1.2]}
+        color="#4444ff"
+        visible={!destroyedPlanets.includes('Planet_Projects')}
+      />
+      
+      <ShieldEffect 
+        position={[-60, 8, 10]} 
+        scale={[7, 7, 7]}
+        color="#44ff44"
+        visible={!destroyedPlanets.includes('Planet_Skills')}
+      />
+
+      {/* Background Starfield */}
+      <Starfield count={3000} />
+
+      {/* Holographic Welcome Text */}
+      <HolographicText 
+        text="PORTFOLIO DEFENSE SYSTEM"
+        position={[0, 25, -50]}
+        fontSize={1.8}
+        visible={true}
+      />
 
       {/* Prop ships scattered around - only two ships with different colors, far away */}
       

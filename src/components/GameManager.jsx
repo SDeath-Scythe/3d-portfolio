@@ -10,7 +10,7 @@ import PortfolioScene from './Scene/PortfolioScene';
 import LaserBeam from './LaserBeam';
 import RevivalBeam from './RevivalBeam';
 
-const GameManager = ({ onPlanetHit }) => {
+const GameManager = ({ onPlanetHit, onGameManagerReady }) => {
   const { gl, camera } = useThree();
   const { playLaserSound, playHitSound, startBackgroundMusic } = useAudio();
   const [hoveredObject, setHoveredObject] = useState(null);
@@ -55,6 +55,18 @@ const GameManager = ({ onPlanetHit }) => {
   const fpsController = FPSController({ 
     onPointerLockChange: setIsPointerLocked 
   });
+
+  // Expose game manager functions to parent
+  useEffect(() => {
+    if (onGameManagerReady) {
+      onGameManagerReady({
+        requestPointerLock: fpsController.requestPointerLock,
+        exitPointerLock: fpsController.exitPointerLock,
+        resetCamera: fpsController.resetCamera,
+        isPointerLocked: fpsController.isPointerLocked
+      });
+    }
+  }, [onGameManagerReady, fpsController]);
 
   // Shooting system setup
   const shootingSystem = ShootingSystem({

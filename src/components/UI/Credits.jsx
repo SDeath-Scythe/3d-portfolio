@@ -16,6 +16,31 @@ const Credits = () => {
         className="credits-toggle"
         onClick={toggleCredits}
         title="View Credits"
+        style={{
+          position: 'absolute',
+          bottom: '30px',
+          left: '300px', // Move away from sound visualizer
+          background: 'rgba(0, 20, 40, 0.9)',
+          border: '1px solid rgba(0, 255, 136, 0.6)',
+          borderRadius: '50%',
+          width: '45px',
+          height: '45px',
+          color: '#00ffff',
+          fontSize: '18px',
+          cursor: 'pointer',
+          zIndex: 120,
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.transform = 'scale(1.1)';
+          e.target.style.boxShadow = '0 0 25px rgba(0, 255, 136, 0.6)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.transform = 'scale(1)';
+          e.target.style.boxShadow = '0 0 15px rgba(0, 255, 136, 0.3)';
+        }}
       >
         ℹ️
       </button>

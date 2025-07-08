@@ -18,16 +18,18 @@ const AudioControls = () => {
     <div style={{
       position: 'absolute',
       top: '20px',
-      left: '20px',
-      background: 'rgba(0, 0, 0, 0.8)',
-      border: '1px solid #00ff88',
+      right: '300px', // Move away from mission status
+      background: 'rgba(0, 20, 40, 0.95)',
+      border: '1px solid rgba(0, 255, 136, 0.6)',
       borderRadius: '8px',
       padding: '15px',
       color: '#00ff88',
-      fontFamily: 'monospace',
+      fontFamily: '"Courier New", monospace',
       fontSize: '12px',
-      zIndex: 1000,
-      minWidth: '200px'
+      zIndex: 200, // Higher than HUD
+      minWidth: '220px',
+      backdropFilter: 'blur(10px)',
+      boxShadow: '0 0 20px rgba(0, 255, 136, 0.3)'
     }}>
       <div style={{ marginBottom: '10px', fontWeight: 'bold', textAlign: 'center' }}>
         🎵 AUDIO CONTROLS
